@@ -1,0 +1,12 @@
+{
+  "name": "valora-2-0",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Valora 2.0 discovery app",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: valora-2-0
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
