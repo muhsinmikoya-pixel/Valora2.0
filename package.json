@@ -1,8 +1,1 @@
-{
-  "name": "valora-2-progress",
-  "version": "2.0.1",
-  "private": true,
-  "description": "Valora 2.0 shopping and nearby places demo",
-  "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=18" }
-}
+{"name":"valora-2-restored-layout","version":"2.0.2","private":true,"scripts":{"start":"node server.js"},"engines":{"node":">=18"}}

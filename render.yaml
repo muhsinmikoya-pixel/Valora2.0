@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: valora-2-progress
+    name: valora-2-restored-layout
     runtime: node
     buildCommand: npm install
     startCommand: npm start
