@@ -1,12 +1,25 @@
-const http=require('http'),fs=require('fs'),path=require('path');
-const root=path.join(__dirname,'public'),port=process.env.PORT||3000;
-const mime={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'application/javascript','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp'};
-const server=http.createServer((req,res)=>{
- const u=new URL(req.url,'http://localhost');
- res.setHeader('X-Content-Type-Options','nosniff');
- if(u.pathname==='/api/health'){res.writeHead(200,{'Content-Type':'application/json'});return res.end(JSON.stringify({ok:true,app:'Valora 2.0'}))}
- if(u.pathname==='/api/ask'&&req.method==='POST'){let body='';req.on('data',c=>body+=c);req.on('end',()=>{let d={};try{d=JSON.parse(body)}catch{};res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({ok:true,answer:'Backend connected. Real AI answers require an AI provider API key configured securely on the server.',question:String(d.question||'').slice(0,1000)}))});return}
- let p=decodeURIComponent(u.pathname);if(p==='/')p='/index.html';let file=path.resolve(root,'.'+p);if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end('Forbidden')}
- fs.readFile(file,(e,b)=>{if(e){res.writeHead(404,{'Content-Type':'text/plain'});return res.end('Not found')}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream'});res.end(b)})
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, 'public');
+const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
+const server = http.createServer((req, res) => {
+  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  if (url.pathname === '/api/health') {
+    res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+    return res.end(JSON.stringify({ ok: true, app: 'Valora 2.0', version: '2.0.1' }));
+  }
+  let requested = decodeURIComponent(url.pathname);
+  if (requested === '/') requested = '/index.html';
+  const file = path.resolve(root, '.' + requested);
+  if (!file.startsWith(root + path.sep) && file !== path.join(root, 'index.html')) {
+    res.writeHead(403); return res.end('Forbidden');
+  }
+  fs.readFile(file, (err, data) => {
+    if (err) { res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' }); return res.end('Page not found'); }
+    res.writeHead(200, { 'content-type': types[path.extname(file)] || 'application/octet-stream', 'x-content-type-options': 'nosniff' });
+    res.end(data);
+  });
 });
-server.listen(port,()=>console.log('Valora 2.0 running on '+port));
+const port = Number(process.env.PORT) || 3000;
+server.listen(port, '0.0.0.0', () => console.log(`Valora 2.0 running on port ${port}`));
